@@ -1,18 +1,38 @@
 # roadmap-generator
 
-Skill para generar el **mapa completo de OpenSpec changes** necesarios para implementar un sistema de inicio a fin, con dependencias explícitas y justificación de cada una.
+Skill para generar **`CHANGES.md`** — el índice operativo y canónico de todos los changes necesarios para implementar un sistema desde cero hasta producción.
 
 ---
 
 ## ¿Qué hace?
 
-Lee tu base de conocimiento estructurada en `knowledge-base/` y genera `openspec/roadmap.md` con:
+Lee tu base de conocimiento estructurada en `knowledge-base/` y genera `CHANGES.md` en la raíz del proyecto con:
 
-- **Orden de ejecución** de los changes (tabla con dependencias y razones).
-- **Detalle por change** con funcionalidad, US implementadas, dependencias y riesgos.
-- **Sugerencia de primer change** a ejecutar.
+- **Árbol de dependencias** visual (ASCII art jerárquico).
+- **Paralelismo por fase** con gates explícitos y asignación sugerida de agentes.
+- **Camino crítico**: mínimo irreducible de changes para llegar a producción.
+- **Plan óptimo con 3 agentes**: tabla de asignaciones por paso.
+- **Por cada change**: estado checkbox, scope operacional, dependencias, nivel de governance y archivos KB a leer antes.
 
 Es **fire-and-forget**: no hace preguntas, va directo al output.
+
+---
+
+## ¿Por qué no es solo "un roadmap"?
+
+Un roadmap clásico es informativo (qué viene y en qué orden). `CHANGES.md` es **operativo**: te dice cómo paralelizar el trabajo entre múltiples agentes o personas, qué es el mínimo irreducible si te falta tiempo, qué archivos KB debe leer el agente antes de proponer cada change, y qué nivel de revisión humana requiere cada uno.
+
+Diferencias clave con un roadmap simple:
+
+| Aspecto | Roadmap simple | CHANGES.md |
+|---------|---------------|------------|
+| Dependencias | Tabla 1-a-1 | Árbol jerárquico + gates |
+| Paralelización | Implícita o nula | Explícita, con asignación a agentes |
+| Priorización ante tiempo limitado | Difícil de inferir | Camino crítico marcado |
+| Contrato con la KB | Implícito | Sección "Leer antes" por change |
+| Nivel de riesgo | No declarado | Governance: BAJO/MEDIO/ALTO/CRITICO |
+| Scope por change | Descriptivo | Operacional (modelos, endpoints, migraciones) |
+| Tracking de progreso | No | Checkboxes `[ ]` / `[x]` |
 
 ---
 
@@ -48,57 +68,83 @@ proyecto/
 └── openspec/                    # OpenSpec inicializado
 
 Le decís al agente:
-"generá el roadmap del proyecto"
+"generá el CHANGES.md del proyecto"
 ```
 
-→ El agente lee la KB y escribe `openspec/roadmap.md`.
+→ El agente lee la KB y escribe `CHANGES.md` en la raíz.
 
 ---
 
-## Output esperado
-
-`openspec/roadmap.md` con esta estructura:
+## Estructura del output
 
 ```markdown
-# Roadmap de Implementación
+# CHANGES — Secuencia de Implementación
 
-| # | Change | Funcionalidad | US | Depende de | Razón |
-|---|--------|---------------|----|-----------|-------|
-| 1 | us-000-setup | Infra base | US-000 | — | Punto de partida |
-| 2 | us-001-auth | JWT + RBAC | US-001 a US-005 | us-000-setup | ... |
-| ... |
+> Índice canónico de todos los changes del proyecto X.
 
-## Detalle por change
-...
-```
+## Cómo usar este documento
+(5 pasos)
 
-Más una sugerencia del primer change a ejecutar:
+## Árbol de dependencias
+(ASCII art jerárquico)
 
-```
-✅ openspec/roadmap.md creado con 9 changes.
-Primer change recomendado: us-000-setup
-Para arrancar: /opsx:propose us-000-setup
+### Paralelismo por fase
+(GATES con asignación a agentes)
+
+### Camino crítico
+(cadena lineal irreducible)
+
+### Plan óptimo con 3 agentes
+(tabla paso × agente)
+
+## FASE 0 — Cimientos
+### [C-01] `foundation-setup`
+- Estado: [ ] pendiente
+- Scope: bullets operacionales
+- Dependencias: ninguna
+- Governance: BAJO
+- Leer antes:
+  - knowledge-base/01_vision_y_objetivos.md
+  - ...
+
+## FASE 1A — Autenticación
+### [C-03] `auth`
+- ...
 ```
 
 ---
 
 ## Reglas que aplica para inferir dependencias
 
-1. **Infra primero**: `us-000-setup` no depende de nada.
-2. **Auth antes que recursos protegidos**.
-3. **Entidad referenciada antes que entidad que referencia** (ej. `categorias` antes que `productos`).
-4. **Backend antes que frontend acoplado**.
-5. **Integraciones externas (pagos, webhooks) al final**.
-6. **Admin / dashboards al final** (dependen de datos que muestran).
+1. **Infra primero**: C-01 nunca depende de nada.
+2. **Modelos core antes que features**: C-02 es típicamente core-models.
+3. **Auth antes que recursos protegidos**.
+4. **Entidad referenciada antes que la que referencia** (`categorías` antes que `productos`).
+5. **Backend antes que frontend acoplado**.
+6. **Integraciones externas (pagos, webhooks) al final**.
+7. **Admin / dashboards al final** (dependen de datos que muestran).
+8. **Refactors visuales / UI restyle al final del todo** (requieren producto estable).
+
+## Niveles de governance
+
+| Nivel | Cuándo se usa |
+|-------|---------------|
+| **BAJO** | Scaffolding, CRUDs simples, pages frontend sin lógica crítica. |
+| **MEDIO** | Flujos con estado, sesiones, máquinas de estado, WS no críticos. |
+| **ALTO** | Notificaciones, gestión de roles, WS gateway, observabilidad. |
+| **CRITICO** | Auth, pagos, datos de seguridad, audit trail, modelos core. |
 
 ---
 
-## Por qué esta skill
+## Output al cerrar
 
-- **Evita "vibe planning"**: en lugar de improvisar el orden de implementación a medida que codeás, lo dejás explícito y trazable.
-- **Output compatible con OpenSpec**: cada fila de la tabla es directamente el input para `/opsx:propose <change-name>`.
-- **Justificación obligatoria**: cada dependencia tiene un "por qué" — esto fuerza a pensar bien antes de aceptarla.
-- **Detecta paralelizables**: changes con dependencias disjuntas se pueden trabajar en paralelo.
+```
+✅ CHANGES.md creado en la raíz con 10 changes en 4 fases.
+Camino crítico: 7 changes
+Gates de paralelismo: 5
+Primer change recomendado: C-01 (foundation-setup)
+Para arrancar: /opsx:propose C-01-foundation-setup
+```
 
 ---
 
