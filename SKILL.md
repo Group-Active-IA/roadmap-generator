@@ -42,6 +42,14 @@ Justificación: CHANGES.md es el **índice maestro** del proyecto, debe ser lo p
 
 ### Input — qué leer de la KB
 
+**Si orquestado** (`.jr-orchestrator-state.json` presente, `version == 2` y `state.kb.files` no vacío):
+usá `state.kb.files` como lista autoritativa de paths a leer, en lugar de globbear el directorio.
+Usá `state.kb.discovery` como contexto para nombrar/agrupar changes e inferir governance (hint only — los archivos son la fuente de verdad).
+Si `state.kb.files` está vacío o ausente, caé al fallback de disco (comportamiento standalone).
+
+**Si standalone** (sin estado o fallback por `state.kb.files` vacío):
+corré los tres pre-checks normales y leé los archivos directamente de `knowledge-base/`.
+
 Leé **siempre** estos 4 canónicos (los más informativos):
 1. `04_modelo_de_datos.md` → entidades y relaciones (revela orden de creación de tablas).
 2. `06_funcionalidades.md` → US y épicas (la unidad de cada change).
@@ -211,6 +219,7 @@ Mencioná explícitamente:
 9. Para cada change escribir: Estado, Scope, Dependencias, Governance, Leer antes.
 10. Escribir `CHANGES.md` en la raíz.
 11. Cerrar con tabla resumen + sugerencia del primer change.
+12. **Si orquestado**: ejecutar el hook de estado — actualizar `state.roadmap` con `created_by: "roadmap-generator"`, `source: "CHANGES.md"`, y la lista de IDs `C-NN` generados. No escribir `step` (el orquestador avanza el step). Ver [`assets/state-contract.md`](assets/state-contract.md) para el algoritmo condicional completo.
 
 ### Output al usuario al cerrar
 
@@ -228,6 +237,28 @@ Para arrancar: `/opsx:propose C-01-{nombre}`
 
 ---
 
+## State integration (orchestrated)
+
+Este hook es **condicional y standalone-safe**: se ejecuta solo si `.jr-orchestrator-state.json` ya existe en la raíz del proyecto (run orquestado por jr-orchestrator). Si el archivo no existe, el comportamiento es idéntico al de hoy — ningún archivo de estado es creado.
+
+**Cuándo corre**: inmediatamente después de escribir `CHANGES.md` (último paso del workflow, antes de retornar al usuario).
+
+**Qué escribe**: solo `state.roadmap` — nunca toca `step`, `owner`, `kb`, `skills`, ni `agents`.
+
+**Slice que registra**:
+| Campo | Valor |
+|---|---|
+| `created_by` | `"roadmap-generator"` |
+| `source` | `"CHANGES.md"` |
+| `changes` | lista de IDs `C-NN` generados, en orden |
+
+El slice es un **índice thin**: el detalle de scope, governance y dependencias por change vive en `CHANGES.md` (fuente de verdad única). No se duplica nada en el estado.
+
+**Algoritmo completo, reglas de input orquestado y fallback a disco**: ver [`assets/state-contract.md`](assets/state-contract.md).
+
+---
+
 ## Resources
 
 - **Templates**: ver [assets/changes-template.md](assets/changes-template.md) — plantilla completa de `CHANGES.md` con ejemplos.
+- **State contract**: ver [assets/state-contract.md](assets/state-contract.md) — schema slice `state.roadmap`, algoritmo de escritura condicional, reglas de input orquestado (`state.kb.files` / `state.kb.discovery`), fallback a disco.
