@@ -40,7 +40,7 @@ Diferencias clave con un roadmap simple:
 
 Antes de invocar esta skill necesitás:
 
-1. **Base de conocimiento generada** en `knowledge-base/` (raíz). Si no la tenés, corré primero la skill [`kb-creator`](https://github.com/JuanCruzRobledo/kb-creator).
+1. **Base de conocimiento generada** en `knowledge-base/` (raíz). Si no la tenés, corré primero la skill [`kb-creator`](https://github.com/Group-Active-IA/kb-creator).
 2. **OpenSpec inicializado** en el proyecto:
    ```bash
    npx @fission-ai/openspec@latest init
@@ -53,7 +53,7 @@ Si falta cualquiera de los dos, la skill te avisa y se detiene **sin escribir na
 ## Instalación
 
 ```bash
-npx skills add https://github.com/JuanCruzRobledo/roadmap-generator
+npx skills add https://github.com/Group-Active-IA/roadmap-generator
 ```
 
 ---

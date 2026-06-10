@@ -42,7 +42,7 @@ Justificación: CHANGES.md es el **índice maestro** del proyecto, debe ser lo p
 
 ### Input — qué leer de la KB
 
-**Si orquestado** (`.jr-orchestrator-state.json` presente, `version == 2` y `state.kb.files` no vacío):
+**Si orquestado** (`.active-orchestrator-state.json` presente, `version == 2` y `state.kb.files` no vacío):
 usá `state.kb.files` como lista autoritativa de paths a leer, en lugar de globbear el directorio.
 Usá `state.kb.discovery` como contexto para nombrar/agrupar changes e inferir governance (hint only — los archivos son la fuente de verdad).
 Si `state.kb.files` está vacío o ausente, caé al fallback de disco (comportamiento standalone).
@@ -239,7 +239,7 @@ Para arrancar: `/opsx:propose C-01-{nombre}`
 
 ## State integration (orchestrated)
 
-Este hook es **condicional y standalone-safe**: se ejecuta solo si `.jr-orchestrator-state.json` ya existe en la raíz del proyecto (run orquestado por jr-orchestrator). Si el archivo no existe, el comportamiento es idéntico al de hoy — ningún archivo de estado es creado.
+Este hook es **condicional y standalone-safe**: se ejecuta solo si `.active-orchestrator-state.json` ya existe en la raíz del proyecto (run orquestado por active-orchestrator). Si el archivo no existe, el comportamiento es idéntico al de hoy — ningún archivo de estado es creado.
 
 **Cuándo corre**: inmediatamente después de escribir `CHANGES.md` (último paso del workflow, antes de retornar al usuario).
 

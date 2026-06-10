@@ -1,12 +1,12 @@
 # State Contract — roadmap-generator owns `state.roadmap`
 
-Reference: C-13a frozen contract (`.jr-orchestrator-state.json` v2, §4.2 I/O matrix).
+Reference: C-13a frozen contract (`.active-orchestrator-state.json` v2, §4.2 I/O matrix).
 
 ---
 
 ## 1. Schema slice
 
-roadmap-generator is the **sole writer** of the `roadmap` object inside `.jr-orchestrator-state.json`.
+roadmap-generator is the **sole writer** of the `roadmap` object inside `.active-orchestrator-state.json`.
 It NEVER touches `step`, `owner`, `kb`, `skills`, or `agents`.
 
 ```json
@@ -37,7 +37,7 @@ Fields:
 Run this hook **after** `CHANGES.md` is fully written, before returning to the user.
 
 ```
-1. Check project root for `.jr-orchestrator-state.json`
+1. Check project root for `.active-orchestrator-state.json`
    ├─ ABSENT  → no-op. Do NOT create the file. Done.
    ├─ PRESENT, version != 2 → surface one-line note:
    │    "State file is not v2, skipping state update."
@@ -49,7 +49,7 @@ Run this hook **after** `CHANGES.md` is fully written, before returning to the u
         Write the file back. Done.
 ```
 
-**Why never create**: the orchestrator (jr-orchestrator) is the sole creator of the state file (C-13a D3). roadmap-generator updating-only avoids two writers racing to create it.
+**Why never create**: the orchestrator (active-orchestrator) is the sole creator of the state file (C-13a D3). roadmap-generator updating-only avoids two writers racing to create it.
 
 **Why strictly conditional**: roadmap-generator is a public standalone skill. Forcing a state file on every direct invocation would regress standalone projects and pollute non-orchestrated repos.
 
@@ -59,7 +59,7 @@ Run this hook **after** `CHANGES.md` is fully written, before returning to the u
 
 ## 3. Orchestrated input rules
 
-When running orchestrated (`.jr-orchestrator-state.json` present and `version == 2`):
+When running orchestrated (`.active-orchestrator-state.json` present and `version == 2`):
 
 ### 3.1 Reading KB files
 
@@ -87,7 +87,7 @@ When falling back to disk glob (no state or empty `state.kb.files`):
 
 ### 3.4 Standalone invariant
 
-With no `.jr-orchestrator-state.json`:
+With no `.active-orchestrator-state.json`:
 - The three pre-checks, the KB reads, the frozen `CHANGES.md` format, and the closing user output are **byte-for-byte identical to today**.
 - The "Si orquestado" hook (§2) and the `state.kb` read (§3.1–3.2) never fire.
 - No state file is created.
