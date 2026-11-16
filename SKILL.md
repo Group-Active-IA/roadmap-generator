@@ -74,7 +74,7 @@ El archivo SIEMPRE tiene esta estructura. **No agregues ni quites secciones de p
 
 > Índice canónico de todos los changes del proyecto {NombreProyecto}.
 > Cada change es atómico: un agente puede implementarlo en una sesión (~4-6 horas).
-> **Leer este archivo antes de ejecutar cualquier `/opsx:propose`.**
+> **Leer este archivo antes de invocar la skill de propuesta instalada.**
 
 ---
 
@@ -232,7 +232,7 @@ Mencioná explícitamente:
 **Gates de paralelismo**: {G}
 **Primer change recomendado**: `C-01` ({nombre})
 
-Para arrancar: `/opsx:propose C-01-{nombre}`
+Para arrancar: indicá la invocación de la skill de propuesta instalada en el cliente activo y el nombre real del primer change.
 ```
 
 ---
