@@ -20,6 +20,16 @@ class RoadmapContractTests(unittest.TestCase):
         self.assertNotRegex(SKILL, r"C-01 es siempre")
         self.assertIn("primer item elegible", SKILL)
 
+    def test_roadmap_keeps_task_identity_and_scope_when_linked(self):
+        self.assertIn("No renumeres IDs existentes", SKILL)
+        self.assertIn("alcance y las dependencias", TEMPLATE)
+        self.assertIn("responsable y el estado operativo", TEMPLATE)
+
+    def test_roadmap_defers_remote_operations_to_task_management(self):
+        self.assertIn("`active-roadmap`", SKILL)
+        self.assertIn("vista previa y confirmación", SKILL)
+        self.assertIn(".active-stack/roadmap-state.json", TEMPLATE)
+
     def test_resume_keeps_existing_roadmap_and_records_its_path(self):
         self.assertRegex(SKILL, r"(?im)^- .*`reuse`.*`CHANGES\.md`.*sin escribir")
         self.assertRegex(STATE, r'"changes_file": "CHANGES.md"')
