@@ -6,7 +6,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: gentleman-programming
-  version: "2.0"
+  version: "2.1"
 ---
 
 ## When to Use
@@ -29,6 +29,13 @@ La invocación orquestada para la fase `roadmap` trae la variante confirmada del
 - `reuse`: abrí `CHANGES.md`, verificá que identifica trabajo y dependencias y devolvé la ruta y los IDs existentes sin escribir en el archivo. Conservá los IDs de la fuente aunque difieran de C-NN. El orquestador registra la reutilización.
 
 En uso independiente, generá el roadmap solo si falta. Cuando exista, proponé una revisión puntual y esperá confirmación antes de modificarlo.
+
+Cuando el proyecto tenga ClickUp configurado en `.active-stack/roadmap.json`,
+`CHANGES.md` conserva el alcance y las dependencias. ClickUp lleva los
+responsables y estados operativos. Derivá la publicación a `active-roadmap`,
+que requiere vista previa y confirmación. Generar o reutilizar el roadmap solo
+produce resultados locales. Conservá los vínculos y las observaciones
+registrados en `.active-stack/roadmap-state.json`.
 
 ## Critical Patterns
 
@@ -126,6 +133,8 @@ El archivo SIEMPRE tiene esta estructura. **No agregues ni quites secciones de p
 ### Reglas para nombrar changes
 
 - Códigos secuenciales `C-01`, `C-02`, ..., `C-NN`. Padding de 2 dígitos siempre.
+- No renumeres IDs existentes al editar, reordenar o renombrar fichas. Al agregar
+  trabajo, usá IDs nuevos y evitá reciclar los retirados.
 - Nombre kebab-case, descriptivo, **sin prefijos us-NNN-** (en este formato usamos C-NN como ID).
 - Si un change cubre varias US, mencionarlas dentro del **Scope**.
 - Si es transversal (infra), igual recibe un C-NN normal.
