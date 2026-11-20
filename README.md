@@ -141,6 +141,22 @@ Para arrancar: leé las referencias de C-01 y acordá su alcance y verificación
 
 ---
 
+## Modo equipo
+
+Si el proyecto tiene `.active-stack/team.json`, cada ficha suma `Resultado`, `Depende de`, `Zona`, `Requiere`, `Modo` y `Responsable`. Incluye un verificador sin red y un reparto editable:
+
+```bash
+sh fichas.sh --root <proyecto> verify                    # ciclos, zonas, cadenas de PR, resultado, responsable
+sh fichas.sh --root <proyecto> split                     # propone el reparto (no escribe)
+sh fichas.sh --root <proyecto> apply --file reparto.json # guarda el reparto aprobado
+```
+
+En Windows, `fichas.bat` con los mismos argumentos. Las reglas de cada campo vienen de `team.py` de la skill `active-delivery`, que solo se instala en Claude y Codex: en OpenCode y Antigravity se hacen los chequeos entre fichas y se avisa que los campos no se validaron. Detalle en [SKILL.md](SKILL.md#modo-equipo-campos-verificador-y-reparto).
+
+Pruebas: `python -B -m unittest discover -s tests`.
+
+---
+
 ## Licencia
 
 Apache-2.0

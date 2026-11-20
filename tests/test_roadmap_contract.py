@@ -36,6 +36,19 @@ class RoadmapContractTests(unittest.TestCase):
         self.assertRegex(STATE, r'"source": "CHANGES.md"')
         self.assertIsNone(re.search(r"version == 2|version != 2", STATE))
 
+    def test_team_mode_fields_verifier_and_split_are_documented(self):
+        for field in ("Resultado", "Depende de", "Zona", "Requiere", "Modo", "Responsable"):
+            self.assertIn("**%s**" % field, TEMPLATE)
+            self.assertIn("`%s`" % field, SKILL)
+        self.assertIn("fichas.sh", SKILL)
+        self.assertIn("fichas.bat", SKILL)
+        self.assertIn("apply --file", SKILL)
+        self.assertRegex(SKILL, r"(?i)OpenCode.*Antigravity")
+        self.assertIn("active-delivery", SKILL)
+
+    def test_old_roadmaps_keep_working(self):
+        self.assertRegex(SKILL, r"(?i)sin estos campos.*siguen")
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -222,6 +222,47 @@ Mencioná explícitamente:
 
 ---
 
+## Modo equipo: campos, verificador y reparto
+
+Se activa cuando el proyecto tiene `.active-stack/team.json` (lo escribe la fundación en modo equipo). Sin ese archivo, todo sigue igual que arriba.
+
+### Campos de la ficha
+
+Cada ficha suma estos campos, en el mismo formato `- **Campo**: valor`, debajo de `Estado`:
+
+| Campo | Regla |
+|-------|-------|
+| `Resultado` | Verificable. Sin resultado no hay ficha válida. |
+| `Depende de` | IDs de ficha o `#PR`, separados por comas, o `ninguna`. `#PR@SHA` **solo** si depende de un PR abierto. Máximo **2 PR abiertos encadenados**; si hay más, extraé la base común a un PR chico. Reemplaza a `Dependencias`, que se sigue leyendo igual. |
+| `Zona` | Rutas o paquetes que toca, separados por comas. Recomendada, no bloquea. |
+| `Requiere` | Agente y sistema que pide la **tarea**, no la persona (ej. `claude o codex · windows y linux`). |
+| `Modo` | `odd` o `sdd`. |
+| `Responsable` | `id` de integrante de `team.json`. Lo escribe solo el reparto aprobado. |
+
+Las olas no se escriben: se calculan desde `Depende de`. Las fichas existentes, sin estos campos, siguen funcionando: el verificador avisa qué falta sin bloquear.
+
+### Verificador
+
+Script de esta skill, sin red ni GitHub. Llamá siempre al lanzador, que elige Python 3.8+:
+
+- Linux, macOS, Termux, Git Bash: `sh <skill-dir>/fichas.sh --root <proyecto> verify`
+- PowerShell o cmd en Windows: `<skill-dir>\fichas.bat --root <proyecto> verify`
+
+Detecta: ciclos de dependencias, dependencias a fichas que no existen, IDs repetidos, cadenas de más de 2 PR abiertos, fichas de equipo sin `Resultado` y `Responsable` que no está en `team.json` (son errores, salida 1). Una **zona compartida** entre fichas que pueden ir en paralelo es un aviso para revisar, no una prueba de conflicto. Salida: un JSON con `ok`, `errors`, `warnings` y `field_validation`. Salida 2 = uso incorrecto; 3 = falta Python.
+
+Las reglas de **cada campo** (formato de `Depende de`, valores de `Modo`, credenciales) no se copian: el verificador usa `validate_ficha` de `team.py`, de la skill `active-delivery`, instalada en la carpeta hermana. **`active-delivery` solo se instala en Claude y Codex.** En OpenCode y Antigravity el verificador hace igual todos los chequeos entre fichas, devuelve `field_validation: false` y avisa «validación de campos no disponible en este agente». Mostrale ese aviso a la persona tal cual; no valides los campos a mano ni digas que se revisaron.
+
+### Reparto editable
+
+1. `fichas.sh|fichas.bat --root <proyecto> split` propone un reparto de las fichas sin terminar según la cantidad del equipo (`size` de `team.json`, o `--size N`). No escribe nada.
+2. Mostrá la propuesta por ola. Si hay más personas que trabajo en paralelo, `sin_ficha` lista quiénes quedan libres: revisan PR o adelantan la ola siguiente; **no inventes fichas**. Si hay menos, una persona toma varias fichas de la misma ola.
+3. Las fichas empezadas (`Estado` distinto de `[ ]`) conservan su `Responsable` (`fijo: true`) y las terminadas (`[x]`) no se reparten. Los lugares sin integrante en `team.json` quedan sin responsable: no inventes ids.
+4. La persona edita y aprueba. Guardá solo lo aprobado, como `{"C-02": "m2", ...}`, y aplicalo con `apply --file <reparto.json>`. Es todo o nada: rechaza fichas empezadas, IDs o integrantes desconocidos y fichas sin `Resultado`, y no toca otras líneas.
+
+Replanificar es repetir los pasos 1 a 4: las fichas empezadas no cambian.
+
+---
+
 ## Workflow
 
 1. Ejecutar pre-checks (existen los 10 canónicos de la KB).
@@ -234,7 +275,7 @@ Mencioná explícitamente:
 8. Diseñar plan con 3 agentes.
 9. Para cada change escribir: Estado, Scope, Dependencias, Governance, Leer antes.
 10. Escribir `CHANGES.md` en la raíz.
-11. Cerrar con tabla resumen + sugerencia del primer change.
+11. Cerrar con tabla resumen + sugerencia del primer change. **En modo equipo**, antes de cerrar: escribí los campos del modo equipo en cada ficha (salvo `Responsable`, que lo escribe el reparto aprobado), corré el verificador, corregí sus errores y ofrecé el reparto editable (sección «Modo equipo»).
 12. **Si orquestado**: ejecutar el hook de estado — actualizar `state.roadmap` con `created_by: "roadmap-generator"`, `source: "CHANGES.md"`, `changes_file: "CHANGES.md"` y la lista de IDs `C-NN` generados. No escribir `step` (el orquestador avanza el step). Ver [`assets/state-contract.md`](assets/state-contract.md) para el algoritmo condicional completo.
 
 ### Output al usuario al cerrar
