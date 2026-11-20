@@ -184,6 +184,21 @@ Paso │ Agente A (Backend Core) │ Agente B (Backend Aux) │ Agente C (Fronte
 
 ---
 
+### [C-{NN}] `{nombre-change}` (modo equipo: el proyecto tiene `.active-stack/team.json`)
+- **Estado**: `[ ]` pendiente
+- **Resultado**: {qué queda funcionando y cómo se comprueba}
+- **Scope**: ...
+- **Depende de**: ninguna | `C-NN` | `C-NN, #PR` | `#PR@SHA` (solo PR abierto; máximo 2 encadenados)
+- **Zona**: `{ruta/}`, `{paquete}`
+- **Requiere**: claude o codex · windows y linux
+- **Modo**: odd | sdd
+- **Responsable**: {id de team.json; lo escribe el reparto aprobado}
+- **Governance**: BAJO | MEDIO | ALTO | CRITICO
+- **Leer antes**:
+  - ...
+
+---
+
 ## FASE {M} — {Nombre semántico}
 
 (seguir el patrón hasta cubrir todos los changes del proyecto)
@@ -201,7 +216,8 @@ Antes de devolver el archivo al usuario, verificá:
 - [ ] Hay al menos un GATE por cada fork de paralelismo detectado.
 - [ ] El camino crítico tiene una flecha lineal sin ramas.
 - [ ] La tabla de "Plan óptimo con 3 agentes" tiene 3 columnas y los pasos enumerados.
-- [ ] Cada change tiene exactamente 5 campos: Estado, Scope, Dependencias, Governance, Leer antes.
+- [ ] Cada change tiene exactamente 5 campos: Estado, Scope, Dependencias, Governance, Leer antes. En modo equipo suma Resultado, Zona, Requiere, Modo y Responsable, y `Depende de` reemplaza a Dependencias.
+- [ ] En modo equipo, `fichas.sh|fichas.bat verify` termina con `ok: true`.
 - [ ] Cada "Leer antes" tiene 3 a 5 archivos KB con sección cuando aplique.
 - [ ] El Scope tiene bullets operacionales (modelos, endpoints, migraciones, tests).
 - [ ] Cada Governance tiene uno de los 4 niveles: BAJO, MEDIO, ALTO, CRITICO.
