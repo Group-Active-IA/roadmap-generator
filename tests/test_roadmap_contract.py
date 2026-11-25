@@ -46,6 +46,19 @@ class RoadmapContractTests(unittest.TestCase):
         self.assertRegex(SKILL, r"(?i)OpenCode.*Antigravity")
         self.assertIn("active-delivery", SKILL)
 
+    def test_generated_roadmap_carries_the_sequential_review_policy(self):
+        policy = TEMPLATE.split("## Revisión de PR en equipo", 1)[1].split("---", 1)[0]
+        self.assertIn("responsable de la siguiente", policy)
+        self.assertIn("orden de este roadmap", policy)
+        self.assertIn("revisor independiente", policy)
+        self.assertIn("aprueba y fusiona", policy)
+        self.assertIn("solicita cambios", policy)
+        self.assertIn("PR abierto al autor", policy)
+        self.assertIn("misma rama", policy)
+        self.assertIn("nuevo SHA", policy)
+        self.assertIn("antes de definir el equipo", SKILL)
+        self.assertIn("comando `reviewer`", SKILL)
+
     def test_old_roadmaps_keep_working(self):
         self.assertRegex(SKILL, r"(?i)sin estos campos.*siguen")
 

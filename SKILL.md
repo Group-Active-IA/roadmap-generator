@@ -6,7 +6,7 @@ description: >
 license: Apache-2.0
 metadata:
   author: gentleman-programming
-  version: "2.1"
+  version: "2.2"
 ---
 
 ## When to Use
@@ -26,7 +26,7 @@ metadata:
 La invocación orquestada para la fase `roadmap` trae la variante confirmada del plan. El roadmap local usa Markdown tanto con trabajo directo como con entrega SDD.
 
 - `local-markdown`: generá `CHANGES.md` con la plantilla de esta skill. Si ya existe, conservá el archivo y devolvé el conflicto para resolverlo con el usuario.
-- `reuse`: abrí `CHANGES.md`, verificá que identifica trabajo y dependencias y devolvé la ruta y los IDs existentes sin escribir en el archivo. Conservá los IDs de la fuente aunque difieran de C-NN. El orquestador registra la reutilización.
+- `reuse`: abrí `CHANGES.md`, verificá que identifica trabajo y dependencias y devolvé la ruta y los IDs existentes sin escribir en el archivo. Conservá los IDs de la fuente aunque difieran de C-NN. El orquestador registra la reutilización. Si es un roadmap de equipo previo y la política de revisión no está, informá la diferencia y ofrecé una actualización puntual para agregarla con aprobación.
 
 En uso independiente, generá el roadmap solo si falta. Cuando exista, proponé una revisión puntual y esperá confirmación antes de modificarlo.
 
@@ -224,7 +224,7 @@ Mencioná explícitamente:
 
 ## Modo equipo: campos, verificador y reparto
 
-Se activa cuando el proyecto tiene `.active-stack/team.json` (lo escribe la fundación en modo equipo). Sin ese archivo, todo sigue igual que arriba.
+Se activa cuando el proyecto tiene `.active-stack/team.json` (lo escribe la fundación en modo equipo). Incluí siempre la sección «Revisión de PR en equipo» de la plantilla al generar el roadmap. La fundación genera el roadmap antes de definir el equipo, así que la sección debe quedar disponible para cuando se active el modo equipo.
 
 ### Campos de la ficha
 
@@ -255,11 +255,29 @@ Las reglas de **cada campo** (formato de `Depende de`, valores de `Modo`, creden
 ### Reparto editable
 
 1. `fichas.sh|fichas.bat --root <proyecto> split` propone un reparto de las fichas sin terminar según la cantidad del equipo (`size` de `team.json`, o `--size N`). No escribe nada.
-2. Mostrá la propuesta por ola. Si hay más personas que trabajo en paralelo, `sin_ficha` lista quiénes quedan libres: revisan PR o adelantan la ola siguiente; **no inventes fichas**. Si hay menos, una persona toma varias fichas de la misma ola.
+2. Mostrá la propuesta por ola. Si hay más personas que trabajo en paralelo, `sin_ficha` lista quiénes quedan libres: pueden cubrir revisiones de respaldo aprobadas o adelantar la ola siguiente; **no inventes fichas**. Si hay menos, una persona toma varias fichas de la misma ola.
 3. Las fichas empezadas (`Estado` distinto de `[ ]`) conservan su `Responsable` (`fijo: true`) y las terminadas (`[x]`) no se reparten. Los lugares sin integrante en `team.json` quedan sin responsable: no inventes ids.
 4. La persona edita y aprueba. Guardá solo lo aprobado, como `{"C-02": "m2", ...}`, y aplicalo con `apply --file <reparto.json>`. Es todo o nada: rechaza fichas empezadas, IDs o integrantes desconocidos y fichas sin `Resultado`, y no toca otras líneas.
 
 Replanificar es repetir los pasos 1 a 4: las fichas empezadas no cambian.
+
+### Revisión de PR en equipo
+
+El roadmap fija como revisor al responsable de la siguiente ficha elegible
+en el orden del documento. Saltá fichas con cierre u omisión confirmados.
+Consultá el responsable vigente de la siguiente ficha en ClickUp si el
+proyecto lo usa. Para resolver la selección, usá el comando `reviewer`
+de `active-delivery` cuando esté disponible. Si falta un sucesor, su
+responsable no está confirmado, es el autor o no está disponible, pedí al
+equipo que apruebe un revisor independiente y registralo en el PR.
+
+Al abrir el PR, el autor solicita revisión a ese integrante. El revisor
+comprueba el SHA actual y los checks requeridos. Si aprueba, fusiona el PR
+tras cumplir los checks y revisiones exigidos. Si encuentra errores,
+solicita cambios con observaciones concretas y devuelve el PR abierto al
+autor. El autor corrige en la misma rama y pide otra revisión del nuevo
+SHA. Al replanificar, conservá el revisor de los PR abiertos salvo que el
+equipo apruebe el cambio.
 
 ---
 
@@ -274,7 +292,7 @@ Replanificar es repetir los pasos 1 a 4: las fichas empezadas no cambian.
 7. Identificar camino crítico.
 8. Diseñar plan con 3 agentes.
 9. Para cada change escribir: Estado, Scope, Dependencias, Governance, Leer antes.
-10. Escribir `CHANGES.md` en la raíz.
+10. Escribir `CHANGES.md` en la raíz y conservar la sección «Revisión de PR en equipo» de la plantilla.
 11. Cerrar con tabla resumen + sugerencia del primer change. **En modo equipo**, antes de cerrar: escribí los campos del modo equipo en cada ficha (salvo `Responsable`, que lo escribe el reparto aprobado), corré el verificador, corregí sus errores y ofrecé el reparto editable (sección «Modo equipo»).
 12. **Si orquestado**: ejecutar el hook de estado — actualizar `state.roadmap` con `created_by: "roadmap-generator"`, `source: "CHANGES.md"`, `changes_file: "CHANGES.md"` y la lista de IDs `C-NN` generados. No escribir `step` (el orquestador avanza el step). Ver [`assets/state-contract.md`](assets/state-contract.md) para el algoritmo condicional completo.
 

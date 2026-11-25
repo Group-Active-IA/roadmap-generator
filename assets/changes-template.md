@@ -25,6 +25,19 @@ Conservá los IDs de las fichas al editar o reordenar. Si el proyecto usa ClickU
 este roadmap conserva el alcance y las dependencias. Consultá el responsable y el estado operativo
 en ClickUp y el último dato confirmado en `.active-stack/roadmap-state.json`.
 
+## Revisión de PR en equipo
+
+En modo equipo, al abrir un PR solicitá revisión al responsable de la siguiente
+ficha elegible según el orden de este roadmap. Saltá fichas con cierre u omisión
+confirmados. Si no hay ficha siguiente, su responsable no está confirmado,
+es el autor o no está disponible, el equipo aprueba un revisor independiente
+y registra su identidad en el PR.
+
+El revisor comprueba el SHA actual y los checks requeridos. Si todo está
+correcto, aprueba y fusiona el PR tras cumplir las revisiones y checks exigidos.
+Si encuentra errores, solicita cambios y devuelve el PR abierto al autor.
+El autor actualiza la misma rama y pide otra revisión del nuevo SHA.
+
 ---
 
 ## Árbol de dependencias
@@ -217,6 +230,7 @@ Antes de devolver el archivo al usuario, verificá:
 - [ ] El camino crítico tiene una flecha lineal sin ramas.
 - [ ] La tabla de "Plan óptimo con 3 agentes" tiene 3 columnas y los pasos enumerados.
 - [ ] Cada change tiene exactamente 5 campos: Estado, Scope, Dependencias, Governance, Leer antes. En modo equipo suma Resultado, Zona, Requiere, Modo y Responsable, y `Depende de` reemplaza a Dependencias.
+- [ ] La sección «Revisión de PR en equipo» fija el responsable por orden del roadmap y el respaldo independiente.
 - [ ] En modo equipo, `fichas.sh|fichas.bat verify` termina con `ok: true`.
 - [ ] Cada "Leer antes" tiene 3 a 5 archivos KB con sección cuando aplique.
 - [ ] El Scope tiene bullets operacionales (modelos, endpoints, migraciones, tests).
