@@ -143,6 +143,11 @@ Para arrancar: leé las referencias de C-01 y acordá su alcance y verificación
 
 ## Modo equipo
 
+En modo equipo, el responsable de la ficha siguiente revisa el PR del cambio
+actual. El revisor lo aprueba y fusiona tras cumplir los checks exigidos, o
+solicita cambios al autor en el mismo PR. Cuando falta un sucesor elegible, el
+equipo aprueba un revisor independiente. La regla queda en `CHANGES.md`.
+
 Si el proyecto tiene `.active-stack/team.json`, cada ficha suma `Resultado`, `Depende de`, `Zona`, `Requiere`, `Modo` y `Responsable`. Incluye un verificador sin red y un reparto editable:
 
 ```bash
